@@ -3,6 +3,7 @@ import os
 from aiohttp import web
 from pyrogram import Client, filters
 
+# Создаем веб-сервер для Render Web Service
 async def handle(request):
     return web.Response(text="Bot is running!")
 
@@ -33,6 +34,10 @@ async def clear_chat(client, message):
             pass
 
 async def main():
+    # Явно создаем и устанавливаем event loop для совместимости
+    loop = asyncio.get_running_loop()
+    asyncio.set_event_loop(loop)
+    
     await start_web_server()
     await app.start()
     print("Bot started successfully!")
