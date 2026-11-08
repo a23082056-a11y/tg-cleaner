@@ -20,8 +20,8 @@ async def start_web_server():
     port = int(os.environ.get("PORT", 8080))
     site = web.TCPSite(runner, "0.0.0.0", port)
     await site.start()
+    print(f"Web server started on port {port}")
 
-# Ключи прописаны напрямую — теперь они точно никуда не пропадут
 API_ID = 31886621
 API_HASH = "b2d85f1c4e84f1504a42d7514e23407a"
 
@@ -43,7 +43,9 @@ async def clear_chat(client, message):
             break
 
 async def main():
+    print("Starting web server...")
     await start_web_server()
+    print("Starting Pyrogram client...")
     await app.start()
     print("Bot started successfully!")
     await asyncio.Event().wait()
