@@ -1,16 +1,14 @@
 import asyncio
-import sys
+import os
+from aiohttp import web
+from pyrogram import Client, filters
 
-# Жестко создаем цикл событий ДО любых импортов Pyrogram для Python 3.14
+# Инициализация цикла для Python 3.14
 try:
     loop = asyncio.get_event_loop()
 except RuntimeError:
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
-
-import os
-from aiohttp import web
-from pyrogram import Client, filters
 
 async def handle(request):
     return web.Response(text="Bot is running!")
@@ -20,7 +18,7 @@ async def start_web_server():
     app_web.add_routes([web.get("/", handle)])
     runner = web.AppRunner(app_web)
     await runner.setup()
-    port = int(os.environ.get("PORT", 8080))
+    port = int(os.environ.get("PORT", 10000))
     site = web.TCPSite(runner, "0.0.0.0", port)
     await site.start()
     print(f"Web server started on port {port}")
@@ -28,7 +26,8 @@ async def start_web_server():
 API_ID = 31886621
 API_HASH = "b2d85f1c4e84f1504a42d7514e23407a"
 
-app = Client("my_account", api_id=API_ID, api_hash=API_HASH)
+# Использование сессии в памяти (in_memory=True), чтобы не создавать файлы на диске
+app = Client(":memory:", api_id=API_ID, api_hash=API_HASH)
 
 @app.on_message(filters.me & filters.command("del", prefixes="."))
 async def clear_chat(client, message):
@@ -47,7 +46,7 @@ async def clear_chat(client, message):
 
 async def main():
     await start_web_server()
-    print("Starting Pyrogram client...")
+    print("Starting Pyrogram client in memory...")
     await app.start()
     print("Bot started successfully!")
     await asyncio.Event().wait()
