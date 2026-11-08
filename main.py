@@ -1,13 +1,16 @@
 import asyncio
-import os
-from aiohttp import web
-from pyrogram import Client, filters
+import sys
 
+# Жестко создаем цикл событий ДО любых импортов Pyrogram для Python 3.14
 try:
     loop = asyncio.get_event_loop()
 except RuntimeError:
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
+
+import os
+from aiohttp import web
+from pyrogram import Client, filters
 
 async def handle(request):
     return web.Response(text="Bot is running!")
@@ -43,7 +46,6 @@ async def clear_chat(client, message):
             break
 
 async def main():
-    print("Starting web server...")
     await start_web_server()
     print("Starting Pyrogram client...")
     await app.start()
