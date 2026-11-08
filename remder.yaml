@@ -9,3 +9,7 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.8
+      - key: API_ID
+        value: 31886621
+      - key: API_HASH
+        value: b2d85f1c4e84f1504a42d7514e23407a
