@@ -1,15 +1,13 @@
 import asyncio
 import os
 from aiohttp import web
+from pyrogram import Client, filters
 
-# Инициализируем цикл событий для совместимости на сервере
 try:
     loop = asyncio.get_event_loop()
 except RuntimeError:
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
-
-from pyrogram import Client, filters
 
 async def handle(request):
     return web.Response(text="Bot is running!")
@@ -23,22 +21,20 @@ async def start_web_server():
     site = web.TCPSite(runner, "0.0.0.0", port)
     await site.start()
 
-api_id = int(os.environ.get("API_ID"))
-api_hash = os.environ.get("API_HASH")
+# Ключи прописаны напрямую — теперь они точно никуда не пропадут
+API_ID = 31886621
+API_HASH = "b2d85f1c4e84f1504a42d7514e23407a"
 
-app = Client("my_account", api_id=api_id, api_hash=api_hash)
+app = Client("my_account", api_id=API_ID, api_hash=API_HASH)
 
 @app.on_message(filters.me & filters.command("del", prefixes="."))
 async def clear_chat(client, message):
     chat_id = message.chat.id
-    
-    # Удаляем сообщение с самой командой .del
     try:
         await message.delete()
     except Exception:
         pass
     
-    # Удаляем последние сообщения в чате
     async for msg in client.get_chat_history(chat_id, limit=50):
         try:
             await client.delete_messages(chat_id, msg.id, revoke=True)
