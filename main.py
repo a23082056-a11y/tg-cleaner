@@ -1,15 +1,14 @@
 import asyncio
-import sys
+import os
+from aiohttp import web
 
-# Принудительно создаем event loop для Python 3.14 до импорта pyrogram
+# Инициализируем цикл событий для совместимости на сервере
 try:
     loop = asyncio.get_event_loop()
 except RuntimeError:
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
 
-import os
-from aiohttp import web
 from pyrogram import Client, filters
 
 async def handle(request):
@@ -32,14 +31,20 @@ app = Client("my_account", api_id=api_id, api_hash=api_hash)
 @app.on_message(filters.me & filters.command("del", prefixes="."))
 async def clear_chat(client, message):
     chat_id = message.chat.id
-    await message.delete()
     
-    async for msg in client.get_chat_history(chat_id, limit=100):
+    # Удаляем сообщение с самой командой .del
+    try:
+        await message.delete()
+    except Exception:
+        pass
+    
+    # Удаляем последние сообщения в чате
+    async for msg in client.get_chat_history(chat_id, limit=50):
         try:
             await client.delete_messages(chat_id, msg.id, revoke=True)
-            await asyncio.sleep(0.03)
+            await asyncio.sleep(0.02)
         except Exception:
-            pass
+            break
 
 async def main():
     await start_web_server()
