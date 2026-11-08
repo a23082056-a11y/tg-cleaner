@@ -1,14 +1,15 @@
 import asyncio
 import os
-from aiohttp import web
-from pyrogram import Client, filters
 
-# Инициализация цикла для Python 3.14
+# СУПЕР-ВАЖНО: Создаем и устанавливаем цикл ДО любых импортов Pyrogram!
 try:
     loop = asyncio.get_event_loop()
 except RuntimeError:
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
+
+from aiohttp import web
+from pyrogram import Client, filters
 
 async def handle(request):
     return web.Response(text="Bot is running!")
@@ -26,7 +27,7 @@ async def start_web_server():
 API_ID = 31886621
 API_HASH = "b2d85f1c4e84f1504a42d7514e23407a"
 
-# Использование сессии в памяти (in_memory=True), чтобы не создавать файлы на диске
+# Использование сессии в памяти, чтобы избежать любых проблем с файлами
 app = Client(":memory:", api_id=API_ID, api_hash=API_HASH)
 
 @app.on_message(filters.me & filters.command("del", prefixes="."))
